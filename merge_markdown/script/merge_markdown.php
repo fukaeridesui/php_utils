@@ -32,24 +32,27 @@ function mergeMarkdownFiles($inputDir, $outputFile)
     }
 
     fclose($output);
+
     echo "✅ 統合完了: $outputFile\n";
 }
 
-// 入力ディレクトリ（引数で指定 or デフォルト）
-$inputDirectory = $argv[1] ?? __DIR__;
-if (!is_dir($inputDirectory)) {
-    echo "❌ エラー: 指定されたディレクトリが存在しません。\n";
+// 引数で document_name を取得
+$docName = $argv[1] ?? null;
+if (!$docName) {
+    echo "❌ エラー: ドキュメント名が指定されていません。\n";
     exit(1);
 }
 
-// document_name（例: document_name）を取得
-$documentName = basename(realpath($inputDirectory));
+// 入力ディレクトリ：project_root/documents/document_name
+$inputDirectory = __DIR__ . '/../documents/' . $docName;
+if (!is_dir($inputDirectory)) {
+    echo "❌ エラー: 入力ディレクトリが存在しません: $inputDirectory\n";
+    exit(1);
+}
 
-// タイムスタンプ（例: 20250410_153012）
+// 出力ファイル名（タイムスタンプ付き）
 $timestamp = date('Ymd_His');
-
-// 出力ファイルパス: result/document_name/merged_YYYYMMDD_HHMMSS.md
-$outputDir = __DIR__ . '/../result/' . $documentName;
+$outputDir = __DIR__ . '/../result/' . $docName;
 $outputFile = $outputDir . "/merged_{$timestamp}.md";
 
 mergeMarkdownFiles($inputDirectory, $outputFile);
